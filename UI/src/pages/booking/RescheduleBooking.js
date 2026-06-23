@@ -26,8 +26,9 @@ export default function RescheduleBooking() {
     const [selectedTime, setSelectedTime] = useState("");
     const [bookingMode, setBookingMode] = useState("online");
     const [patientInfo, setPatientInfo] = useState({ name: "", phone: "", note: "" });
-    const [loading, setLoading] = useState(false);
-
+    
+    // Đã xóa setLoading thừa, chỉ giữ lại loading
+    const [loading] = useState(false);
 
     return (
         <main className="mx-auto max-w-7xl px-4 py-8 md:px-6">
@@ -83,7 +84,6 @@ export default function RescheduleBooking() {
                         <button
                             disabled={!selectedDate || !selectedTime || loading}
                             onClick={async () => {
-                                // await fakeApi(250);
                                 navigate("payment");
                             }}
                             className="rounded-2xl bg-sky-600 px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:bg-sky-300"

@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CreditCard } from "lucide-react";
 import Card from "../../components/Card";
 import { useGlobal } from "../../context/GlobalContext";
 import { formatMoney } from "../../utils/formatMoney";
 import { useModal } from "../../utils/useModal";
-import { useEffect } from "react";
 import { bookingModes } from "../../data/mockData";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+// Đã xóa import useParams thừa ở đây
 
 export default function BookingPage() {
     const navigate = useNavigate();
@@ -23,21 +22,18 @@ export default function BookingPage() {
 
     const { showModal } = useModal();
     const [allSlots, setAllSlots] = useState([]);
-    const [availableSlots, setAvailableSlots] = useState([]);
+    // Đã xóa biến availableSlots thừa ở đây
     const [bookedSlots, setBookedSlots] = useState([]);
 
     useEffect(() => {
-
         async function fetchAvailableSlots() {
-
             if (!selectedDoctor?._id || !selectedDate) {
-                setAvailableSlots([]);
+                setAllSlots([]);
                 setBookedSlots([]);
                 return;
             }
 
             try {
-
                 // reset selected time khi đổi ngày
                 setSelectedTime("");
 
@@ -49,7 +45,6 @@ export default function BookingPage() {
                             doctorId: selectedDoctor._id,
                             date: selectedDate
                         },
-
                         headers: {
                             Authorization: `Bearer ${accessToken}`
                         }
@@ -58,19 +53,18 @@ export default function BookingPage() {
 
                 console.log(data.data);
                 setAllSlots(data.data.allSlots || []);
-                setAvailableSlots(data.data.availableSlots || []);
                 setBookedSlots(data.data.bookedSlots || []);
             } catch (error) {
                 console.error(error);
-
-                setAvailableSlots([]);
+                setAllSlots([]);
                 setBookedSlots([]);
             }
         }
 
         fetchAvailableSlots();
 
-    }, [selectedDoctor, selectedDate]);
+    }, [selectedDoctor, selectedDate, setSelectedTime]); // Đã thêm setSelectedTime vào mảng này
+
     const dates = Array.from({ length: 7 }).map((_, i) => {
         const d = new Date();
         d.setDate(d.getDate() + i + 1);
@@ -80,7 +74,7 @@ export default function BookingPage() {
     async function handleContinue() {
         showModal(
             'scale', // Kiểu xuất hiện
-            'info', // Trạng thái (ảnh hưởng đến màu sắc và icon)
+            'info', // Trạng thái
             'Thông báo', // Tiêu đề
             `Xác nhận đặt lịch khám với ${selectedDoctor?.name} vào lúc ${selectedTime} ngày ${selectedDate}`, // Nội dung
             () => { }, // Callback khi đóng modal
@@ -124,41 +118,31 @@ export default function BookingPage() {
                             </div>
 
                             {allSlots.length === 0 ? (
-
                                 <div className="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-500">
                                     Bác sĩ không có lịch khám trong ngày này
                                 </div>
-
                             ) : (
-
                                 <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
-
                                     {allSlots.map((t) => {
-
                                         const isBooked = bookedSlots.includes(t);
-
                                         return (
                                             <button
                                                 key={t}
                                                 disabled={isBooked}
                                                 onClick={() => !isBooked && setSelectedTime(t)}
                                                 className={`
-              rounded-2xl border px-4 py-3 text-sm font-medium transition
-
-              ${isBooked
+                                                    rounded-2xl border px-4 py-3 text-sm font-medium transition
+                                                    ${isBooked
                                                         ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400"
                                                         : selectedTime === t
                                                             ? "border-sky-500 bg-sky-50 text-sky-700"
                                                             : "border-sky-100 bg-white text-slate-600 hover:border-sky-300"
                                                     }
-            `}
+                                                `}
                                             >
                                                 <div>{t}</div>
-
                                                 {isBooked && (
-                                                    <div className="mt-1 text-[11px]">
-                                                        Đã đặt
-                                                    </div>
+                                                    <div className="mt-1 text-[11px]">Đã đặt</div>
                                                 )}
                                             </button>
                                         );

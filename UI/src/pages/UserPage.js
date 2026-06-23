@@ -4,7 +4,6 @@ import { UserIcon } from "@phosphor-icons/react";
 import { useGlobal } from "../context/GlobalContext"
 import { getData, putData } from "../utils/callAPI";
 
-
 export default function User() {
     const { user, setUser, loading, setLoading } = useGlobal();
 
@@ -21,47 +20,43 @@ export default function User() {
         },
     ]);
 
-    const getBookings = async () => {
-        const response = await getData({ url: `/bookings/user/${user?._id}` })
-        setBookings(response.data.bookings)
-    }
     useEffect(() => {
-        getBookings()
-    }, [])
+        // Đưa hàm getBookings vào trong useEffect để fix lỗi missing dependency
+        const getBookings = async () => {
+            if (!user?._id) return; // Thêm điều kiện an toàn
+            try {
+                const response = await getData({ url: `/bookings/user/${user?._id}` });
+                setBookings(response.data.bookings);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        getBookings();
+    }, [user?._id]); // Chạy lại khi có ID user
 
     // =========================
     // GET PROFILE
     // =========================
     useEffect(() => {
-
         async function fetchProfile() {
-
             try {
-
                 const response = await getData({
                     url: "/users",
                 });
-
                 setUser(response.data);
-
             } catch (error) {
                 console.error(error);
             }
         }
-
         fetchProfile();
-
-    }, []);
+    }, [setUser]); // Đã thêm setUser vào đây
 
     // =========================
     // UPDATE PROFILE
     // =========================
     async function handleUpdateProfile() {
-
         try {
-
             setLoading(true);
-
             const response = await putData({
                 url: "/users",
                 data: {
@@ -72,14 +67,11 @@ export default function User() {
             });
 
             setUser(response.data.user);
-
             localStorage.setItem(
                 "user",
                 JSON.stringify(response.data.user)
             );
-
             alert("Cập nhật thành công");
-
         } catch (error) {
             console.error(error);
         } finally {
@@ -124,7 +116,7 @@ export default function User() {
                                     <button className="rounded-2xl border border-rose-200 px-4 py-2 text-sm font-semibold text-rose-600">Hủy lịch</button>
                                 </div>
                             </div>
-                        ))): 0}
+                        ))) : 0}
                     </div>
                 </Card>
             </div>
