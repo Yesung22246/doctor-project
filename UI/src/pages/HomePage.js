@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useGlobal } from "../context/GlobalContext";
-// Đã xóa Link, Navigate
-import { BandaidsIcon, MapPin, ShieldCheck, Star, MagnifyingGlassIcon, ClockUserIcon, ArrowArcRightIcon } from "@phosphor-icons/react"; // Đã xóa ClockIcon
+import { BandaidsIcon, MapPin, ShieldCheck, Star, MagnifyingGlassIcon, ClockUserIcon, ArrowArcRightIcon } from "@phosphor-icons/react";
 import Card from "../components/Card";
 import { formatMoney } from "../utils/formatMoney";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +11,6 @@ export default function HomePage() {
     const [query, setQuery] = useState("");
     const navigate = useNavigate();
     const [doctors, setDoctors] = useState([]);
-    // Đã xóa selectedDoctor vì không dùng trong component này
     const { setSelectedDoctor, isAuthenticated, user } = useGlobal();
 
     useEffect(() => {
@@ -24,17 +22,24 @@ export default function HomePage() {
     }, []);
 
     const specialties = [
-        { name: "Nhi khoa", icon: "", count: 24 },
-        { name: "Tim mạch", icon: "", count: 18 },
-        { name: "Da liễu", icon: "", count: 15 },
-        { name: "Răng hàm mặt", icon: "", count: 12 },
-        { name: "Sản phụ khoa", icon: "", count: 20 },
-        { name: "Thần kinh", icon: "", count: 10 },
+        { name: "Nhi khoa", icon: "👶", count: 24 },
+        { name: "Tim mạch", icon: "❤️", count: 18 },
+        { name: "Da liễu", icon: "✨", count: 15 },
+        { name: "Răng hàm mặt", icon: "🦷", count: 12 },
+        { name: "Sản phụ khoa", icon: "🤰", count: 20 },
+        { name: "Thần kinh", icon: "🧠", count: 10 },
     ];
 
+    // Chuyển sang trang đặt lịch
     async function goToBooking(doctor) {
         setSelectedDoctor(doctor);
         navigate(`/booking/${doctor._id}`);
+    }
+
+    // Chuyển sang trang xem chi tiết bác sĩ
+    async function goToDetail(doctor) {
+        setSelectedDoctor(doctor);
+        navigate(`/detail`);
     }
 
     const filteredDoctors = useMemo(() => {
@@ -66,7 +71,7 @@ export default function HomePage() {
                                     onClick={() => navigate("/profile")}
                                     className="inline-flex items-center justify-center rounded-2xl border border-sky-200 bg-white px-6 py-3 font-semibold text-sky-700 transition hover:bg-sky-50"
                                 >
-                                    {user.name}
+                                    {user?.name || "Tài khoản"}
                                 </button>
                             ) : (
                                 <button
@@ -84,7 +89,7 @@ export default function HomePage() {
                         <div className="rounded-2xl bg-sky-100 p-3 text-sky-700"><MagnifyingGlassIcon size={20} /></div>
                         <div>
                             <div className="font-semibold text-slate-800">Tìm bác sĩ / chuyên khoa</div>
-                            <div className="text-sm text-slate-500">Giả lập tìm kiếm realtime</div>
+                            <div className="text-sm text-slate-500">Tìm kiếm nhanh chóng</div>
                         </div>
                     </div>
                     <div className="mt-4 flex gap-2 rounded-2xl border border-sky-100 bg-sky-50 p-2">
@@ -97,7 +102,7 @@ export default function HomePage() {
                         />
                     </div>
                     <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
-                        <div className="rounded-2xl bg-sky-50 p-4"><div className="font-semibold text-slate-800">+120</div><div className="text-slate-500">Bác sĩ được kiểm duyệt</div></div>
+                        <div className="rounded-2xl bg-sky-50 p-4"><div className="font-semibold text-slate-800">+120</div><div className="text-slate-500">Bác sĩ chuyên khoa</div></div>
                         <div className="rounded-2xl bg-sky-50 p-4"><div className="font-semibold text-slate-800">24/7</div><div className="text-slate-500">Hỗ trợ đặt lịch</div></div>
                     </div>
                 </Card>
@@ -110,7 +115,11 @@ export default function HomePage() {
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {specialties.map((s) => (
-                        <Card key={s.name} className="p-5 transition hover:-translate-y-1 hover:shadow-md">
+                        <Card 
+                            key={s.name} 
+                            className="p-5 transition hover:-translate-y-1 hover:shadow-md cursor-pointer"
+                            onClick={() => setQuery(s.name)}
+                        >
                             <div className="flex items-center justify-between">
                                 <div>
                                     <div className="text-3xl">{s.icon}</div>
@@ -126,30 +135,33 @@ export default function HomePage() {
             <section className="mt-8">
                 <div className="mb-4 flex items-center justify-between">
                     <h2 className="text-2xl font-bold text-slate-800">Bác sĩ nổi bật</h2>
-                    <button onClick={() => navigate("/detail")} className="text-sm font-semibold text-sky-700">Xem chi tiết</button>
+                    <span className="text-sm text-slate-500">Danh sách bác sĩ</span>
                 </div>
                 <div className="grid gap-5 lg:grid-cols-3">
                     {filteredDoctors.map((doctor) => (
-                        <Card key={doctor._id} className="overflow-hidden">
+                        <Card key={doctor._id || doctor.id} className="overflow-hidden">
                             <img src={doctor?.avatar} alt={doctor?.name} className="h-52 w-full object-cover" />
                             <div className="p-5">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <div className="text-lg font-bold text-slate-800">{doctor?.name}</div>
+                                        <div className="text-lg font-bold text-slate-800 cursor-pointer hover:text-sky-600" onClick={() => goToDetail(doctor)}>{doctor?.name}</div>
                                         <div className="text-sm text-slate-500">{doctor?.specialty}</div>
                                     </div>
                                     <div className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-600">
-                                        <Star size={14} /> {doctor?.rating}
+                                        <Star size={14} /> {doctor?.rating || 5}
                                     </div>
                                 </div>
                                 <div className="mt-4 space-y-2 text-sm text-slate-600">
-                                    <div className="flex items-center gap-2"><ClockUserIcon size={16} className="text-sky-500" /> {doctor?.experience}</div>
-                                    <div className="flex items-center gap-2"><BandaidsIcon size={16} className="text-sky-500" /> {doctor?.degree}</div>
-                                    <div className="flex items-center gap-2"><MapPin size={16} className="text-sky-500" /> {doctor?.location}</div>
+                                    <div className="flex items-center gap-2"><ClockUserIcon size={16} className="text-sky-500" /> {doctor?.experience || "Nhiều năm kinh nghiệm"}</div>
+                                    <div className="flex items-center gap-2"><BandaidsIcon size={16} className="text-sky-500" /> {doctor?.degree || "Bác sĩ"}</div>
+                                    <div className="flex items-center gap-2"><MapPin size={16} className="text-sky-500" /> {doctor?.location || "Phòng khám"}</div>
                                 </div>
                                 <div className="mt-5 flex items-center justify-between">
-                                    <div className="text-lg font-bold text-sky-700">{formatMoney(doctor.price)}</div>
-                                    <button onClick={() => goToBooking(doctor)} className="rounded-2xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700">Đặt lịch ngay</button>
+                                    <div className="text-lg font-bold text-sky-700">{doctor?.price ? formatMoney(doctor.price) : "Liên hệ"}</div>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => goToDetail(doctor)} className="rounded-2xl border border-sky-600 px-3 py-2 text-sm font-semibold text-sky-600 hover:bg-sky-50">Chi tiết</button>
+                                        <button onClick={() => goToBooking(doctor)} className="rounded-2xl bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700">Đặt lịch</button>
+                                    </div>
                                 </div>
                             </div>
                         </Card>

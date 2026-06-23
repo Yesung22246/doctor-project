@@ -6,7 +6,7 @@ import { useGlobal } from "../../context/GlobalContext";
 import { formatMoney } from "../../utils/formatMoney";
 import { useModal } from "../../utils/useModal";
 import { bookingModes } from "../../data/mockData";
-import axios from "axios";
+import { getData } from "../../utils/callAPI";
 // Đã xóa import useParams thừa ở đây
 
 export default function BookingPage() {
@@ -37,23 +37,14 @@ export default function BookingPage() {
                 // reset selected time khi đổi ngày
                 setSelectedTime("");
 
-                const accessToken = localStorage.getItem("token");
-                const data = await axios.get(
-                    `http://localhost:5000/api/bookings/available-slots`,
-                    {
-                        params: {
-                            doctorId: selectedDoctor._id,
-                            date: selectedDate
-                        },
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`
-                        }
-                    }
-                );
+                // Gọi API bằng getData thay vì axios để không bị dính localhost
+                const response = await getData({
+                    url: `/bookings/available-slots?doctorId=${selectedDoctor._id}&date=${selectedDate}`
+                });
 
-                console.log(data.data);
-                setAllSlots(data.data.allSlots || []);
-                setBookedSlots(data.data.bookedSlots || []);
+                console.log(response.data);
+                setAllSlots(response.data.allSlots || []);
+                setBookedSlots(response.data.bookedSlots || []);
             } catch (error) {
                 console.error(error);
                 setAllSlots([]);
