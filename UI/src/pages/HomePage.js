@@ -1,12 +1,9 @@
-import { useEffect, useState } from "react";
-// import { doctors } from "../data/mockData";
-import { Link } from "react-router-dom";
+import { useEffect, useState, useMemo } from "react";
 import { useGlobal } from "../context/GlobalContext";
-import { Navigate } from "react-router-dom";
-import { BandaidsIcon, ClockIcon, MapPin, ShieldCheck, Star, MagnifyingGlassIcon, ClockUserIcon, ArrowArcRightIcon } from "@phosphor-icons/react";
+// Đã xóa Link, Navigate
+import { BandaidsIcon, MapPin, ShieldCheck, Star, MagnifyingGlassIcon, ClockUserIcon, ArrowArcRightIcon } from "@phosphor-icons/react"; // Đã xóa ClockIcon
 import Card from "../components/Card";
 import { formatMoney } from "../utils/formatMoney";
-import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { getData } from "../utils/callAPI";
 
@@ -15,11 +12,11 @@ export default function HomePage() {
     const [query, setQuery] = useState("");
     const navigate = useNavigate();
     const [doctors, setDoctors] = useState([]);
-    const { setSelectedDoctor, selectedDoctor, isAuthenticated, user } = useGlobal();
+    // Đã xóa selectedDoctor vì không dùng trong component này
+    const { setSelectedDoctor, isAuthenticated, user } = useGlobal();
 
     useEffect(() => {
         getData({ url: "/doctors" }).then((res) => {
-            
             setDoctors(res.data.doctors || []);
         }).catch((error) => {
             console.error("Error fetching doctors:", error);

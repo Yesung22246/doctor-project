@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { HeadlightsIcon } from "@phosphor-icons/react";
+// Đã xóa HeadlightsIcon vì không dùng
+import { ClockUserIcon } from "@phosphor-icons/react"; 
 import Card from "../components/Card";
 
 export default function History() {
 
-    const [history, setHistory] = useState([
+    // Chỉ lấy history, bỏ setHistory vì đang dùng mock data cứng
+    const [history] = useState([
         {
             date: "2026-03-12",
             doctorName: "BS. Trần Thu Hà",
@@ -17,7 +19,8 @@ export default function History() {
         <main className="mx-auto max-w-6xl px-4 py-8 md:px-6">
             <Card className="p-6">
                 <div className="flex items-center gap-3">
-                    <div className="rounded-2xl bg-sky-100 p-3 text-sky-700"><History size={20} /></div>
+                    {/* Đã sửa tên icon cho đúng vì History không phải là tên icon hợp lệ trong Phosphor */}
+                    <div className="rounded-2xl bg-sky-100 p-3 text-sky-700"><ClockUserIcon size={20} /></div>
                     <div>
                         <h2 className="text-2xl font-bold text-slate-800">Lịch sử khám</h2>
                         <p className="text-sm text-slate-500">Theo dõi cuộc hẹn và ghi chú bệnh án</p>

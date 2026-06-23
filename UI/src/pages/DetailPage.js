@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+// Đã xóa useParams và Link vì không sử dụng
 import { doctors } from "../data/mockData";
 import Card from "../components/Card";
 import { formatMoney } from "../utils/formatMoney";
 import { Star } from "@phosphor-icons/react";
 
 export default function PageDetail() {
-    const [selectedDoctor, setSelectedDoctor] = useState(doctors[0]);
+    // Chỉ lấy giá trị, không cần hàm set vì không thay đổi nó trong file này
+    const [selectedDoctor] = useState(doctors[0]); 
     const [page, setPage] = useState("detail");
     const doctor = selectedDoctor;
+
     return (
         <main className="mx-auto max-w-7xl px-4 py-8 md:px-6">
             <Card className="overflow-hidden">
@@ -49,6 +51,7 @@ export default function PageDetail() {
                         </div>
 
                         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                            {/* Bạn vẫn giữ lại biến page cho logic sau này nếu cần, tạm thời cứ để setPage */}
                             <button onClick={() => setPage("booking")} className="rounded-2xl bg-sky-600 px-6 py-3 font-semibold text-white hover:bg-sky-700">Đặt lịch</button>
                             <button onClick={() => setPage("review")} className="rounded-2xl border border-sky-200 px-6 py-3 font-semibold text-sky-700 hover:bg-sky-50">Xem / gửi đánh giá</button>
                         </div>
