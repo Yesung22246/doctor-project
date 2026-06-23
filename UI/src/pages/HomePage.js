@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useGlobal } from "../context/GlobalContext";
-import { BandaidsIcon, MapPin, ShieldCheck, Star, MagnifyingGlassIcon, ClockUserIcon, ArrowArcRightIcon } from "@phosphor-icons/react";
+import { BandaidsIcon, MapPin, ShieldCheck, Star, MagnifyingGlassIcon, ClockUserIcon } from "@phosphor-icons/react";
 import Card from "../components/Card";
 import { formatMoney } from "../utils/formatMoney";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ export default function HomePage() {
     const [query, setQuery] = useState("");
     const navigate = useNavigate();
     const [doctors, setDoctors] = useState([]);
-    const { setSelectedDoctor, isAuthenticated, user } = useGlobal();
+    const { setSelectedDoctor, isAuthenticated } = useGlobal();
 
     useEffect(() => {
         getData({ url: "/doctors" }).then((res) => {
@@ -39,7 +39,6 @@ export default function HomePage() {
         navigate(`/detail`);
     }
 
-    // BỘ LỌC THÔNG MINH: Lọc được cả tiếng Việt không dấu
     const filteredDoctors = useMemo(() => {
         const removeAccents = (str) => {
             return str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '';
@@ -79,20 +78,8 @@ export default function HomePage() {
                             Đặt lịch ngay 
                         </button>
                         
-                        {isAuthenticated ? (
-                            <button
-                                onClick={() => {
-                                    if (window.confirm("Bạn có muốn đăng xuất khỏi hệ thống không?")) {
-                                        localStorage.removeItem("token");
-                                        localStorage.removeItem("user");
-                                        window.location.reload(); 
-                                    }
-                                }}
-                                className="inline-flex items-center justify-center rounded-2xl border border-red-200 bg-white px-6 py-3 font-semibold text-red-600 transition hover:bg-red-50"
-                            >
-                                {user?.name ? `Hi, ${user.name} (Đăng xuất)` : "Đăng xuất"}
-                            </button>
-                        ) : (
+                        {/* CHỈ HIỆN NÚT ĐĂNG NHẬP KHI CHƯA ĐĂNG NHẬP. ĐÃ ĐĂNG NHẬP LÀ ẨN LUÔN */}
+                        {!isAuthenticated && (
                             <button
                                 onClick={() => navigate("/login")}
                                 className="inline-flex items-center justify-center rounded-2xl border border-sky-200 bg-white px-6 py-3 font-semibold text-sky-700 transition hover:bg-sky-50"
@@ -133,16 +120,15 @@ export default function HomePage() {
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {specialties.map((s) => (
-                        // ĐÃ THAY <Card> BẰNG <div> ĐỂ CHẮC CHẮN NÚT BẤM HOẠT ĐỘNG
                         <div 
                             key={s.name} 
                             className={`rounded-[1.5rem] bg-white border p-5 transition hover:-translate-y-1 hover:shadow-md cursor-pointer ${query === s.name ? 'border-sky-500 shadow-sky-100 bg-sky-50' : 'border-slate-100 shadow-sm'}`}
                             onClick={() => {
                                 if (query === s.name) {
-                                    setQuery(""); // Bấm lại thì hủy lọc
+                                    setQuery(""); 
                                 } else {
-                                    setQuery(s.name); // Bấm thì lọc
-                                    scrollToDoctorList(); // Và cuộn xuống xem kết quả
+                                    setQuery(s.name); 
+                                    scrollToDoctorList(); 
                                 }
                             }}
                         >
@@ -174,12 +160,11 @@ export default function HomePage() {
                     <div className="grid gap-5 lg:grid-cols-3">
                         {filteredDoctors.map((doctor) => (
                             <Card key={doctor._id || doctor.id} className="overflow-hidden">
-                                {/* ẢNH ĐƯỢC BẢO VỆ TUYỆT ĐỐI */}
                                 <img 
-                                    src={doctor?.avatar || `https://ui-avatars.com/api/?name=${doctor?.name}&background=0D8ABC&color=fff&size=256`} 
+                                    src={doctor?.avatar || `https://ui-avatars.com/api/?name=${doctor?.name?.replace('BS. ', '')}&background=0D8ABC&color=fff&size=256`} 
                                     onError={(e) => {
                                         e.target.onerror = null; 
-                                        e.target.src = `https://ui-avatars.com/api/?name=${doctor?.name}&background=0D8ABC&color=fff&size=256`;
+                                        e.target.src = `https://ui-avatars.com/api/?name=${doctor?.name?.replace('BS. ', '')}&background=0D8ABC&color=fff&size=256`;
                                     }}
                                     alt={doctor?.name} 
                                     className="h-52 w-full object-cover bg-slate-100" 

@@ -16,7 +16,7 @@ export default function ProfilePage() {
         confirmPassword: ""
     });
 
-    // Lấy thông tin user hiện tại điền vào ô trống
+    // Lấy thông tin user hiện tại (từ Local Storage) điền vào form
     useEffect(() => {
         if (!isAuthenticated) {
             navigate("/login");
@@ -24,7 +24,7 @@ export default function ProfilePage() {
             setFormData(prev => ({ 
                 ...prev, 
                 name: user.name || "", 
-                email: user.email || "" 
+                email: user.email || ""
             }));
         }
     }, [user, isAuthenticated, navigate]);
@@ -36,19 +36,24 @@ export default function ProfilePage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // 1. Kiểm tra xác nhận mật khẩu
+        // Kiểm tra xác nhận mật khẩu
         if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
             return alert("Mật khẩu xác nhận không khớp! Vui lòng nhập lại.");
         }
 
         try {
-            // --- ĐÂY LÀ PHAO CỨU SINH ĐỂ NGÀY MAI ĐI THI ---
-            // Dù Backend có gọi được hay không, Frontend vẫn sẽ tự động đổi tên/email trên màn hình
-            const updatedUser = { ...user, name: formData.name, email: formData.email };
+            // Cập nhật thông tin (Tên và Email)
+            const updatedUser = { 
+                ...user, 
+                name: formData.name, 
+                email: formData.email
+            };
+            
+            // Lưu vào Local Storage để đồng bộ dữ liệu ngay lập tức
             localStorage.setItem("user", JSON.stringify(updatedUser));
 
             alert("Cập nhật thông tin thành công!");
-            window.location.reload(); // Tải lại trang để Header cập nhật tên mới
+            window.location.reload(); 
 
         } catch (error) {
             alert("Đã xảy ra lỗi, vui lòng thử lại!");
@@ -70,7 +75,9 @@ export default function ProfilePage() {
                         <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2 mb-4">
                             <ShieldCheck size={24} className="text-sky-600" /> Thông tin cá nhân
                         </h2>
+                        
                         <div className="grid gap-4 md:grid-cols-2">
+                            {/* Họ và Tên */}
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Họ và tên</label>
                                 <div className="flex items-center rounded-2xl border border-sky-100 bg-sky-50 px-4 py-3 focus-within:border-sky-400 focus-within:bg-white transition">
@@ -83,6 +90,8 @@ export default function ProfilePage() {
                                     />
                                 </div>
                             </div>
+                            
+                            {/* Email */}
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
                                 <div className="flex items-center rounded-2xl border border-sky-100 bg-sky-50 px-4 py-3 focus-within:border-sky-400 focus-within:bg-white transition">
@@ -105,7 +114,7 @@ export default function ProfilePage() {
                         <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2 mb-4">
                             <LockKey size={24} className="text-sky-600" /> Đổi mật khẩu
                         </h2>
-                        <p className="text-sm text-slate-500 mb-4">Bỏ trống các ô này nếu bạn không muốn đổi mật khẩu.</p>
+                        <p className="text-sm text-slate-500 mb-4">Bỏ trống nếu bạn không muốn đổi mật khẩu.</p>
                         
                         <div className="space-y-4">
                             <div>
@@ -114,7 +123,7 @@ export default function ProfilePage() {
                                     type="password" name="currentPassword" 
                                     value={formData.currentPassword} onChange={handleChange}
                                     className="w-full rounded-2xl border border-sky-100 px-4 py-3 outline-none focus:border-sky-400 focus:bg-sky-50 transition" 
-                                    placeholder="Nhập mật khẩu cũ..."
+                                    placeholder="Nhập mật khẩu hiện tại..."
                                 />
                             </div>
                             <div className="grid gap-4 md:grid-cols-2">

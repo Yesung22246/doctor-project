@@ -18,9 +18,18 @@ export default function PageLogin() {
         }
 
         // --- KIỂM TRA XÁC NHẬN MẬT KHẨU (CHỈ KHI ĐĂNG KÝ) ---
-        if (loginMode === "signup" && authForm.password !== authForm.confirmPassword) {
-            alert("Mật khẩu xác nhận không khớp! Vui lòng kiểm tra lại.");
-            return; // Dừng lại ngay lập tức, không gọi API
+        if (loginMode === "signup") {
+            if (authForm.password !== authForm.confirmPassword) {
+                alert("Mật khẩu xác nhận không khớp! Vui lòng kiểm tra lại.");
+                return; // Dừng lại ngay lập tức
+            }
+
+            // --- KIỂM TRA TOP 10 MẬT KHẨU YẾU ---
+            const top10WeakPasswords = ["123456", "123456789", "password", "12345", "111111", "qwerty", "1234567", "123123", "12345678", "000000"];
+            if (top10WeakPasswords.includes(authForm.password)) {
+                alert("Mật khẩu quá đơn giản và dễ bị hack! Vui lòng chọn mật khẩu khác an toàn hơn.");
+                return; // Dừng lại ngay lập tức
+            }
         }
 
         try {
