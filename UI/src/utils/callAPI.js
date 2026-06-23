@@ -5,7 +5,7 @@ import axios from "axios";
 // CONFIG
 // ======================
 
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "https://doctor-project-w6iv.onrender.com/api";
 
 // ======================
 // AXIOS INSTANCE
