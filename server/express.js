@@ -1,5 +1,5 @@
 const express = require("express") // dùng thư viện expres
-const port = 5000
+const port = process.env.PORT || 5000
 const app = express()
 const path = require("path")
 const methodOverride = require("method-override")

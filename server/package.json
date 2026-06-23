@@ -15,11 +15,12 @@
     "nodemon": "^3.1.10",
     "path": "^0.12.7"
   },
-  "scripts": {
-    "exp": "nodemon express.js",
-    "db": "json-server --watch .//api/vocab.json --port 8888",
-    "dev": "concurrently \"npm run db \" \"npm run exp \""
-  },
+"scripts": {
+  "start": "node express.js",
+  "exp": "nodemon express.js",
+  "db": "json-server --watch .//api/vocab.json --port 8888",
+  "dev": "concurrently \"npm run db\" \"npm run exp\""
+}
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
