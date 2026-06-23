@@ -7,7 +7,6 @@ import { formatMoney } from "../../utils/formatMoney";
 import { useModal } from "../../utils/useModal";
 import { bookingModes } from "../../data/mockData";
 import { getData } from "../../utils/callAPI";
-// Đã xóa import useParams thừa ở đây
 
 export default function BookingPage() {
     const navigate = useNavigate();
@@ -22,7 +21,6 @@ export default function BookingPage() {
 
     const { showModal } = useModal();
     const [allSlots, setAllSlots] = useState([]);
-    // Đã xóa biến availableSlots thừa ở đây
     const [bookedSlots, setBookedSlots] = useState([]);
 
     useEffect(() => {
@@ -34,17 +32,14 @@ export default function BookingPage() {
             }
 
             try {
-                // reset selected time khi đổi ngày
                 setSelectedTime("");
 
-                // Gọi API bằng getData thay vì axios để không bị dính localhost
                 const response = await getData({
                     url: `/bookings/available-slots?doctorId=${selectedDoctor._id}&date=${selectedDate}`
                 });
 
-                console.log(response.data);
-                setAllSlots(response.data.allSlots || []);
-                setBookedSlots(response.data.bookedSlots || []);
+                setAllSlots(response.data?.allSlots || []);
+                setBookedSlots(response.data?.bookedSlots || []);
             } catch (error) {
                 console.error(error);
                 setAllSlots([]);
@@ -53,8 +48,7 @@ export default function BookingPage() {
         }
 
         fetchAvailableSlots();
-
-    }, [selectedDoctor, selectedDate, setSelectedTime]); // Đã thêm setSelectedTime vào mảng này
+    }, [selectedDoctor, selectedDate, setSelectedTime]);
 
     const dates = Array.from({ length: 7 }).map((_, i) => {
         const d = new Date();
@@ -64,12 +58,28 @@ export default function BookingPage() {
 
     async function handleContinue() {
         showModal(
-            'scale', // Kiểu xuất hiện
-            'info', // Trạng thái
-            'Thông báo', // Tiêu đề
-            `Xác nhận đặt lịch khám với ${selectedDoctor?.name} vào lúc ${selectedTime} ngày ${selectedDate}`, // Nội dung
-            () => { }, // Callback khi đóng modal
-            () => navigate(`/payment/${selectedDoctor._id}`) // Callback khi nhấn nút chính
+            'scale',
+            'info',
+            'Thông báo',
+            `Xác nhận đặt lịch khám với ${selectedDoctor?.name} vào lúc ${selectedTime} ngày ${selectedDate}`,
+            () => { },
+            () => navigate(`/payment/${selectedDoctor._id}`)
+        );
+    }
+
+    // THÊM ĐOẠN NÀY: Nếu tải lại trang mà mất thông tin bác sĩ thì báo quay lại trang chủ
+    if (!selectedDoctor) {
+        return (
+            <div className="flex flex-col items-center justify-center py-32 text-center px-4">
+                <h2 className="text-2xl font-bold text-slate-800">Bạn chưa chọn bác sĩ nào!</h2>
+                <p className="mt-2 text-slate-500">Hệ thống không tìm thấy thông tin bác sĩ. Vui lòng quay lại trang chủ để chọn bác sĩ nhé.</p>
+                <button
+                    onClick={() => navigate("/")}
+                    className="mt-6 rounded-2xl bg-sky-600 px-8 py-3 font-semibold text-white transition hover:bg-sky-700"
+                >
+                    Quay lại Trang chủ
+                </button>
+            </div>
         );
     }
 
@@ -104,13 +114,10 @@ export default function BookingPage() {
 
                         {/* Chọn giờ */}
                         <div>
-                            <div className="mb-3 font-semibold text-slate-800">
-                                Chọn khung giờ
-                            </div>
-
+                            <div className="mb-3 font-semibold text-slate-800">Chọn khung giờ</div>
                             {allSlots.length === 0 ? (
                                 <div className="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-500">
-                                    Bác sĩ không có lịch khám trong ngày này
+                                    Vui lòng chọn ngày để xem lịch trống của bác sĩ.
                                 </div>
                             ) : (
                                 <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
@@ -146,7 +153,7 @@ export default function BookingPage() {
                         <div>
                             <div className="mb-3 font-semibold text-slate-800">Hình thức khám</div>
                             <div className="grid gap-3 sm:grid-cols-2">
-                                {bookingModes.map((m) => (
+                                {bookingModes?.map((m) => (
                                     <button
                                         key={m.key}
                                         onClick={() => setBookingMode(m.key)}
@@ -167,23 +174,23 @@ export default function BookingPage() {
                             </div>
                         </div>
 
-                        {/* Thông tin bệnh nhân */}
+                        {/* Thông tin bệnh nhân - ĐÃ SỬA LỖI TRẮNG TRANG Ở ĐÂY */}
                         <div className="grid gap-3 md:grid-cols-2">
                             <input
-                                value={patientInfo?.name}
+                                value={patientInfo?.name || ""}
                                 onChange={(e) => setPatientInfo((p) => ({ ...p, name: e.target.value }))}
                                 className="rounded-2xl border border-sky-100 px-4 py-3 outline-none focus:border-sky-400"
                                 placeholder="Tên bệnh nhân"
                             />
                             <input
-                                value={patientInfo.phone}
+                                value={patientInfo?.phone || ""}
                                 onChange={(e) => setPatientInfo((p) => ({ ...p, phone: e.target.value }))}
                                 className="rounded-2xl border border-sky-100 px-4 py-3 outline-none focus:border-sky-400"
                                 placeholder="Số điện thoại"
                             />
                         </div>
                         <textarea
-                            value={patientInfo.note}
+                            value={patientInfo?.note || ""}
                             onChange={(e) => setPatientInfo((p) => ({ ...p, note: e.target.value }))}
                             className="min-h-28 w-full rounded-2xl border border-sky-100 px-4 py-3 outline-none focus:border-sky-400"
                             placeholder="Ghi chú triệu chứng / yêu cầu"
@@ -192,7 +199,7 @@ export default function BookingPage() {
                         <button
                             disabled={!selectedDate || !selectedTime || loading}
                             onClick={handleContinue}
-                            className="rounded-2xl bg-sky-600 px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:bg-sky-300"
+                            className="rounded-2xl bg-sky-600 px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:bg-sky-300 transition hover:bg-sky-700"
                         >
                             Tiếp tục
                         </button>
