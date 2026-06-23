@@ -11,27 +11,27 @@ export default function PageLogin() {
     const navigate = useNavigate();
     const { login } = useGlobal(); // Đã xóa user và setUser
 
-    const handleLSubmit = async () => {
-        try {
-            let res;
-            if (loginMode === "login") {
-                res = await postData({
-                    url: "/users/auth/login",
-                    data: authForm
-                });
-            } else {
-                res = await postData({
-                    url: "/users/auth/register",
-                    data: authForm
-                });
-            }
-            console.log("API response:", res.data);
-            login(res.data?.id, res.data?.token);
-            navigate("/");
-        } catch (error) {
-            console.error(error);
+  const handleLSubmit = async () => {
+    try {
+        let res;
+        // Hãy console.log dữ liệu gửi đi xem có đúng không
+        console.log("Đang gửi dữ liệu:", authForm); 
+
+        if (loginMode === "login") {
+            res = await postData({
+                url: "/users/auth/login",
+                data: authForm // Đảm bảo authForm có { email, password }
+            });
+        } 
+        // ... (phần còn lại)
+    } catch (err) {
+        // THÊM ĐOẠN NÀY ĐỂ BẮT LỖI RÕ RÀNG
+        if (err.response) {
+            console.log("Lỗi từ server:", err.response.data);
+            alert("Lỗi: " + JSON.stringify(err.response.data));
         }
-    };
+    }
+}
 
     return (
         <main className="mx-auto grid max-w-7xl gap-6 px-4 py-8 md:grid-cols-2 md:px-6">
