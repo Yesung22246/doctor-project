@@ -4,7 +4,7 @@ import { formatMoney } from "../utils/formatMoney";
 import { useState } from "react";
 import { useGlobal } from "../context/GlobalContext";
 import { postData } from "../utils/callAPI";
-import { useModal } from "../utils/useModal"
+import { useModal } from "../utils/useModal";
 
 const paymentMethods = ["Thẻ tín dụng", "Ví điện tử", "Chuyển khoản ngân hàng"];
 
@@ -22,7 +22,7 @@ export default function PaymentPage() {
     } = useGlobal();
     const { showModal } = useModal();
 
-    const [loading, setLoading] = useState(false);
+    const [loading] = useState(false); // Đã xóa setLoading
     const navigate = useNavigate();
 
     async function handleConfirmBooking() {
@@ -49,7 +49,7 @@ export default function PaymentPage() {
                     url: "/bookings", data: form
                 })
                 console.log(response.data.booking?._id)
-                if (response.status == 201) {
+                if (response.status === 201) { // Đã sửa == thành ===
                     showModal(
                         'scale',
                         'success',

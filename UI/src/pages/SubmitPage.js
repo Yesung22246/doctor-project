@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { CheckCircleIcon } from "@phosphor-icons/react";
 import Card from "../components/Card";
-import { formatMoney } from "../utils/formatMoney";
 import { useNavigate } from "react-router-dom";
 import { useGlobal } from "../context/GlobalContext";
 import { useParams } from "react-router-dom";

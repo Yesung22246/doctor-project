@@ -5,7 +5,8 @@ import { Star } from "@phosphor-icons/react";
 
 export default function Review() {
 
-    const [selectedDoctor, setSelectedDoctor] = useState(null);
+    // Đã xóa setSelectedDoctor và gán thông tin an toàn tránh lỗi crash giao diện
+    const [selectedDoctor] = useState({ id: "1", name: "Bác sĩ", specialty: "Đa khoa" }); 
     const [reviewDraft, setReviewDraft] = useState({ rating: 5, content: "" });
     const [reviews, setReviews] = useState({});
     const user = { name: "Nguyễn Văn A" };
@@ -18,8 +19,8 @@ export default function Review() {
             <h2 className="text-2xl font-bold text-slate-800">Đánh giá bác sĩ</h2>
             <p className="mt-1 text-sm text-slate-500">Gửi nhận xét sau khi khám xong</p>
             <div className="mt-5 rounded-3xl bg-sky-50 p-5">
-              <div className="font-semibold text-slate-800">{doctor.name}</div>
-              <div className="text-sm text-slate-500">{doctor.specialty}</div>
+              <div className="font-semibold text-slate-800">{doctor?.name}</div>
+              <div className="text-sm text-slate-500">{doctor?.specialty}</div>
             </div>
             <div className="mt-5 space-y-4">
               <select value={reviewDraft.rating} onChange={(e) => setReviewDraft((p) => ({ ...p, rating: Number(e.target.value) }))} className="w-full rounded-2xl border border-sky-100 px-4 py-3">

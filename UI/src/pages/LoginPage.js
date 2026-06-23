@@ -9,13 +9,11 @@ export default function PageLogin() {
     const [loginMode, setLoginMode] = useState("login");
     const [authForm, setAuthForm] = useState({ name: "", email: "", password: "" });
     const navigate = useNavigate();
-    const { login, user, setUser } = useGlobal();
+    const { login } = useGlobal(); // Đã xóa user và setUser
 
     const handleLSubmit = async () => {
         try {
-
             let res;
-
             if (loginMode === "login") {
                 res = await postData({
                     url: "/users/auth/login",
@@ -27,18 +25,14 @@ export default function PageLogin() {
                     data: authForm
                 });
             }
-
-            // ví dụ backend trả:
-            // { token, user }
             console.log("API response:", res.data);
             login(res.data?.id, res.data?.token);
-
             navigate("/");
-
         } catch (error) {
             console.error(error);
         }
     };
+
     return (
         <main className="mx-auto grid max-w-7xl gap-6 px-4 py-8 md:grid-cols-2 md:px-6">
             <Card className="p-6">
