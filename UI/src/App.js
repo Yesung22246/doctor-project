@@ -4,7 +4,7 @@ import { GlobalProvider } from "./context/GlobalContext";
 import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import PrivateRoute from "./components/PrivateRoute";
-
+import ProfilePage from './pages/ProfilePage';
 import RescheduleBooking from "./pages/booking/RescheduleBooking";
 import BookingPage from "./pages/booking/BookingPage";
 
@@ -38,6 +38,10 @@ export default function App() {
 
               {/* Private — phải đăng nhập mới vào được */}
               <Route element={<PrivateRoute />}>
+                
+                {/* ĐÃ THÊM ROUTE PROFILE VÀO ĐÂY */}
+                <Route path="/profile" element={<ProfilePage />} />
+                
                 <Route path="/booking">
                   <Route path=":_id/reschedule" element={<RescheduleBooking />} />
                   <Route path=":_id" element={<BookingPage />} />

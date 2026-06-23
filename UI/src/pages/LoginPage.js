@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Card from "../components/Card";
 import { CheckIcon, LogIcon } from "@phosphor-icons/react";
 import { useNavigate } from "react-router-dom";
@@ -7,53 +7,59 @@ import { useGlobal } from "../context/GlobalContext";
 
 export default function PageLogin() {
     const [loginMode, setLoginMode] = useState("login");
-    const [authForm, setAuthForm] = useState({ name: "", email: "", password: "" });
+    // Đã thêm confirmPassword vào state để lưu trữ tạm thời
+    const [authForm, setAuthForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
     const navigate = useNavigate();
-    const { login } = useGlobal(); // Đã xóa user và setUser
+    const { login } = useGlobal();
 
- const handleLSubmit = async (e) => {
-    // Nếu bạn dùng form thì cần dòng này để không bị reload lại trang
-    if (e && e.preventDefault) {
-        e.preventDefault();
-    }
-
-    try {
-        console.log("Đang gửi dữ liệu:", authForm);
-        let res;
-
-        if (loginMode === "login") {
-            res = await postData({
-                url: "/users/auth/login",
-                data: authForm
-            });
-        } else {
-            res = await postData({
-                url: "/users/auth/register",
-                data: authForm
-            });
+    const handleLSubmit = async (e) => {
+        if (e && e.preventDefault) {
+            e.preventDefault();
         }
 
-        console.log("API response:", res.data);
-        
-        // Giả sử sau khi login thành công thì bạn có các trường id và token
-        // Nếu response trả về khác (ví dụ res.data.accessToken), hãy sửa lại ở đây
-        login(res.data?.id, res.data?.token);
-        
-        alert("Đăng nhập thành công!");
-        navigate("/");
-
-    } catch (err) {
-        console.log("Lỗi từ server:", err.response ? err.response.data : err.message);
-        
-        if (err.response) {
-            // Hiện bảng thông báo lỗi cụ thể từ Server
-            alert("Lỗi: " + JSON.stringify(err.response.data));
-        } else {
-            // Trường hợp lỗi mạng hoặc lỗi không đến được server
-            alert("Lỗi kết nối: " + err.message);
+        // --- KIỂM TRA XÁC NHẬN MẬT KHẨU (CHỈ KHI ĐĂNG KÝ) ---
+        if (loginMode === "signup" && authForm.password !== authForm.confirmPassword) {
+            alert("Mật khẩu xác nhận không khớp! Vui lòng kiểm tra lại.");
+            return; // Dừng lại ngay lập tức, không gọi API
         }
-    }
-};
+
+        try {
+            console.log("Đang gửi dữ liệu...");
+            let res;
+
+            if (loginMode === "login") {
+                // Khi đăng nhập chỉ gửi email và password
+                res = await postData({
+                    url: "/users/auth/login",
+                    data: { email: authForm.email, password: authForm.password }
+                });
+            } else {
+                // Khi đăng ký chỉ gửi name, email và password (Lọc bỏ confirmPassword)
+                res = await postData({
+                    url: "/users/auth/register",
+                    data: { name: authForm.name, email: authForm.email, password: authForm.password }
+                });
+            }
+
+            console.log("API response:", res.data);
+            
+            // Lưu thông tin đăng nhập
+            login(res.data?.id, res.data?.token);
+            
+            // Chuyển về trang chủ
+            navigate("/");
+
+        } catch (err) {
+            console.log("Lỗi từ server:", err.response ? err.response.data : err.message);
+            
+            if (err.response) {
+                alert("Lỗi: " + JSON.stringify(err.response.data));
+            } else {
+                alert("Lỗi kết nối: " + err.message);
+            }
+        }
+    };
+
     return (
         <main className="mx-auto grid max-w-7xl gap-6 px-4 py-8 md:grid-cols-2 md:px-6">
             <Card className="p-6">
@@ -74,8 +80,16 @@ export default function PageLogin() {
                     {loginMode === "signup" && (
                         <input value={authForm.name} onChange={(e) => setAuthForm((p) => ({ ...p, name: e.target.value }))} placeholder="Họ và tên" className="w-full rounded-2xl border border-sky-100 px-4 py-3 outline-none focus:border-sky-400" />
                     )}
+                    
                     <input value={authForm.email} onChange={(e) => setAuthForm((p) => ({ ...p, email: e.target.value }))} placeholder="Email" className="w-full rounded-2xl border border-sky-100 px-4 py-3 outline-none focus:border-sky-400" />
+                    
                     <input type="password" value={authForm.password} onChange={(e) => setAuthForm((p) => ({ ...p, password: e.target.value }))} placeholder="Mật khẩu" className="w-full rounded-2xl border border-sky-100 px-4 py-3 outline-none focus:border-sky-400" />
+                    
+                    {/* Ô XÁC NHẬN MẬT KHẨU (CHỈ HIỆN KHI ĐĂNG KÝ) */}
+                    {loginMode === "signup" && (
+                        <input type="password" value={authForm.confirmPassword} onChange={(e) => setAuthForm((p) => ({ ...p, confirmPassword: e.target.value }))} placeholder="Xác nhận mật khẩu" className="w-full rounded-2xl border border-sky-100 px-4 py-3 outline-none focus:border-sky-400" />
+                    )}
+
                     <button
                         onClick={handleLSubmit}
                         className="w-full rounded-2xl bg-sky-600 px-4 py-3 font-semibold text-white hover:bg-sky-700"
