@@ -11,28 +11,49 @@ export default function PageLogin() {
     const navigate = useNavigate();
     const { login } = useGlobal(); // Đã xóa user và setUser
 
-  const handleLSubmit = async () => {
+ const handleLSubmit = async (e) => {
+    // Nếu bạn dùng form thì cần dòng này để không bị reload lại trang
+    if (e && e.preventDefault) {
+        e.preventDefault();
+    }
+
     try {
+        console.log("Đang gửi dữ liệu:", authForm);
         let res;
-        // Hãy console.log dữ liệu gửi đi xem có đúng không
-        console.log("Đang gửi dữ liệu:", authForm); 
 
         if (loginMode === "login") {
             res = await postData({
                 url: "/users/auth/login",
-                data: authForm // Đảm bảo authForm có { email, password }
+                data: authForm
             });
-        } 
-        // ... (phần còn lại)
+        } else {
+            res = await postData({
+                url: "/users/auth/register",
+                data: authForm
+            });
+        }
+
+        console.log("API response:", res.data);
+        
+        // Giả sử sau khi login thành công thì bạn có các trường id và token
+        // Nếu response trả về khác (ví dụ res.data.accessToken), hãy sửa lại ở đây
+        login(res.data?.id, res.data?.token);
+        
+        alert("Đăng nhập thành công!");
+        navigate("/");
+
     } catch (err) {
-        // THÊM ĐOẠN NÀY ĐỂ BẮT LỖI RÕ RÀNG
+        console.log("Lỗi từ server:", err.response ? err.response.data : err.message);
+        
         if (err.response) {
-            console.log("Lỗi từ server:", err.response.data);
+            // Hiện bảng thông báo lỗi cụ thể từ Server
             alert("Lỗi: " + JSON.stringify(err.response.data));
+        } else {
+            // Trường hợp lỗi mạng hoặc lỗi không đến được server
+            alert("Lỗi kết nối: " + err.message);
         }
     }
-}
-
+};
     return (
         <main className="mx-auto grid max-w-7xl gap-6 px-4 py-8 md:grid-cols-2 md:px-6">
             <Card className="p-6">
