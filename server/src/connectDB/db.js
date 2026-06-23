@@ -1,25 +1,18 @@
-const mongoose = require("mongoose")
-
+const mongoose = require("mongoose");
 require('dotenv').config();
-const link = "mongodb://127.0.0.1:27017";
+
+// Đã sửa thành MONGO_URI để khớp chuẩn 100% với cài đặt trên Render của bạn
+const link = process.env.MONGO_URI || "mongodb://127.0.0.1:27017";
 
 async function connect() {
-
-    // connect tới database blog
     try {
-        await mongoose.connect(`${link}`,{
+        await mongoose.connect(link, {
             dbName : "Main_Server",
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            
         });
-        console.log("Connect project Successfully")
+        console.log("Connect project Successfully to:", link.includes("127.0.0.1") ? "Localhost" : "MongoDB Atlas");
     } catch (error) {
-        console.log("Connect project Failure!")
+        console.error("Connect project Failure!", error);
     }
-
-    // connect tới database collection
-    
 }
 
 module.exports = { connect };

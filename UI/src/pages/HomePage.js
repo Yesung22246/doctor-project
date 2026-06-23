@@ -15,7 +15,7 @@ export default function HomePage() {
 
     useEffect(() => {
         getData({ url: "/doctors" }).then((res) => {
-            setDoctors(res.data.doctors || []);
+            setDoctors(res?.data?.doctors || res?.data || []);
         }).catch((error) => {
             console.error("Error fetching doctors:", error);
         });
