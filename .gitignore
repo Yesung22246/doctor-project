@@ -1,0 +1,6 @@
+UI/node_modules
+server/node_modules
+
+server/.env
+
+UI/build
