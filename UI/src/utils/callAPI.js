@@ -1,4 +1,3 @@
-// api.js
 import axios from "axios";
 
 // ======================
@@ -79,7 +78,7 @@ export const getData = async ({
   headers = {},
 }) => {
   return handleResponse(
-    api.get(BASE_URL + url, {
+    api.get(url, {
       params,
       headers,
     })
@@ -93,7 +92,7 @@ export const postData = async ({
   headers = {},
 }) => {
   return handleResponse(
-    api.post(BASE_URL + url, data, {
+    api.post(url, data, {
       headers,
     })
   );
@@ -106,7 +105,7 @@ export const putData = async ({
   headers = {},
 }) => {
   return handleResponse(
-    api.put(BASE_URL + url, data, {
+    api.put(url, data, {
       headers,
     })
   );
@@ -119,7 +118,7 @@ export const deleteData = async ({
   headers = {},
 }) => {
   return handleResponse(
-    api.delete(BASE_URL + url, {
+    api.delete(url, {
       params,
       headers,
     })
