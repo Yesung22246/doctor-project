@@ -26,8 +26,11 @@ app.set('view engine', 'hbs'); // đuôi tệp mẫu mặc định là '.hbs'
 app.use(methodOverride("_method"))
 // đây là bước lưu vào biến body cho req.body trong phương thức post của form
 app.use(cors({
-    origin: "http://localhost:3000", // frontend của bạn
-    credentials: true
+  origin: [
+    "http://localhost:3000",
+    "https://doctor-project.vercel.app"
+  ],
+  credentials: true
 }));
 app.use(express.urlencoded({
     extended: true,
